@@ -1,0 +1,125 @@
+<div class="min-h-screen flex items-center justify-center bg-gray-100">
+
+  <!-- card principal -->
+  <div class="w-full max-w-md bg-white shadow-xl rounded-2xl p-8">
+
+    <!-- encabezado -->
+    <div class="text-center mb-6">
+
+      <h2 class="text-3xl font-bold text-gray-800">
+        Bienvenido
+      </h2>
+
+      <p class="text-gray-500 text-sm mt-2">
+        Accede a tu sistema de gestión de alquileres
+      </p>
+
+    </div>
+
+    <!-- formulario -->
+    <form (ngSubmit)="login()" class="space-y-5">
+
+      <!-- email -->
+      <div>
+
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+          Email
+        </label>
+
+        <input
+          type="email"
+          placeholder="correo@email.com"
+          [(ngModel)]="usuario.email"
+          name="email"
+          required
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg 
+                 focus:outline-none focus:ring-2 focus:ring-blue-500 
+                 transition"
+        >
+
+      </div>
+
+      <!-- password -->
+      <div>
+
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+          Contraseña
+        </label>
+
+        <div class="relative">
+
+          <input
+            [type]="mostrarPassword ? 'text' : 'password'"
+            placeholder="********"
+            [(ngModel)]="usuario.password"
+            name="password"
+            required
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg 
+                   focus:outline-none focus:ring-2 focus:ring-blue-500 
+                   transition"
+          >
+
+          <!-- botón mostrar password -->
+          <button
+            type="button"
+            (click)="mostrarPassword = !mostrarPassword"
+            class="absolute right-3 top-2 text-gray-500 text-sm"
+          >
+            x
+          </button>
+
+        </div>
+
+      </div>
+
+      <!-- recordar sesión -->
+      <div class="flex items-center justify-between text-sm">
+
+        <label class="flex items-center gap-2 text-gray-600">
+
+          <input
+            type="checkbox"
+            class="rounded border-gray-300"
+          >
+
+          Recordarme
+
+        </label>
+
+        <a
+          href="#"
+          class="text-blue-600 hover:underline"
+        >
+          ¿Olvidaste tu contraseña?
+        </a>
+
+      </div>
+
+      <!-- botón login -->
+      <button
+        type="submit"
+        class="w-full bg-blue-600 text-white py-2 rounded-lg
+               hover:bg-blue-700 transition font-semibold shadow-md"
+      >
+        Iniciar sesión
+      </button>
+
+    </form>
+
+    <!-- link registro -->
+    <div class="text-center mt-6 text-sm text-gray-500">
+
+      ¿No tienes cuenta?
+
+      <a
+        routerLink="/register"
+        class="text-blue-600 hover:underline font-medium"
+      >
+        Crear cuenta
+      </a>
+
+    </div>
+
+  </div>
+
+</div>
