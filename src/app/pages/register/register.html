@@ -57,8 +57,11 @@
           <div class="flex flex-col gap-1.5">
             <label class="text-[#333333] text-[12px] font-semibold tracking-wide">Nombre de la Empresa</label>
             <input type="text" placeholder="Ej. Depas Said" [(ngModel)]="usuario.company" name="company"
+              inputmode="text" maxlength="30" pattern="^[A-Za-zÀ-ÿ ]+$"
+              (input)="usuario.company = (usuario.company || '').toString().replace(/[^A-Za-zÀ-ÿ ]/g, '').slice(0,30)"
+              title="Solo letras y espacios. Sin caracteres especiales."
               class="px-3.5 py-2.5 border border-gray-200 rounded-md text-[13px] focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-200 text-gray-700 placeholder-gray-400 w-full transition-all"
-              maxlength="15" required>
+              required>
           </div>
 
           <div class="flex flex-col sm:flex-row gap-4">

@@ -204,8 +204,10 @@
           <div>
             <label class="block mb-2 text-[13px] font-semibold text-gray-900">Documento</label>
             <input type="text" [(ngModel)]="currentInquilino.document"
+              inputmode="numeric" maxlength="8" minlength="8" pattern="\\d{8}"
+              (input)="currentInquilino.document = (currentInquilino.document || '').toString().replace(/\D/g, '').slice(0,8)"
               class="bg-gray-50 border border-gray-300 text-gray-900 text-[13px] rounded-lg focus:ring-[#d400ff] focus:border-[#d400ff] block w-full p-2.5"
-              placeholder="DNI o Pasaporte" required>
+              placeholder="DNI (8 dígitos)" required>
           </div>
           <div>
             <label class="block mb-2 text-[13px] font-semibold text-gray-900">Estado</label>
@@ -228,8 +230,10 @@
           <div>
             <label class="block mb-2 text-[13px] font-semibold text-gray-900">Teléfono</label>
             <input type="text" [(ngModel)]="currentInquilino.phone"
+              inputmode="numeric" maxlength="9" pattern="\\d{9}"
+              (input)="currentInquilino.phone = (currentInquilino.phone || '').toString().replace(/\D/g, '').slice(0,9)"
               class="bg-gray-50 border border-gray-300 text-gray-900 text-[13px] rounded-lg focus:ring-[#d400ff] focus:border-[#d400ff] block w-full p-2.5"
-              placeholder="+51 999 999 999">
+              placeholder="999999999">
           </div>
         </div>
 
