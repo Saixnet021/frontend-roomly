@@ -42,3 +42,10 @@ __screenshots__/
 # System files
 .DS_Store
 Thumbs.db
+\n+# Environment files
+.env
+.env.*
+
+# Generated Angular environment files (generated at build by scripts/set-env.mjs)
+/src/environments/environment.ts
+/src/environments/environment.prod.ts
