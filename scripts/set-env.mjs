@@ -25,21 +25,33 @@ function parseEnv(filePath) {
   }
 }
 
-const env = parseEnv('.env');
+// prefer values from process.env (hosting like Vercel); fall back to .env for local dev
+const fileEnv = parseEnv('.env');
+const env = Object.assign({}, fileEnv, process.env);
 
 const targetPath = './src/environments/environment.ts';
 const targetPathProd = './src/environments/environment.prod.ts';
+const runtimeConfigPath = './src/assets/runtime-config.json';
 
 const apiUrl = env['API_URL'] || 'http://localhost:8080';
-if (!env['API_URL']) {
-  console.log(`.env: API_URL not found, using default ${apiUrl}`);
+if (process.env['API_URL']) {
+  console.log(`Using API_URL from process.env: ${process.env['API_URL']}`);
+} else if (fileEnv['API_URL']) {
+  console.log(`Using API_URL from .env: ${fileEnv['API_URL']}`);
+} else {
+  console.log(`API_URL not found in process.env or .env, using default ${apiUrl}`);
 }
 
 const envConfigFile = `export const environment = {
   production: ${env['PRODUCTION'] === 'true'},
-  apiUrl: '${apiUrl}'
+  apiUrl: ''
 };
 `;
+
+const runtimeConfig = JSON.stringify({
+  production: env['PRODUCTION'] === 'true',
+  apiUrl: apiUrl
+}, null, 2);
 
 const callback = (err) => {
   if (err) {
@@ -49,3 +61,4 @@ const callback = (err) => {
 
 writeFile(targetPath, envConfigFile, callback);
 writeFile(targetPathProd, envConfigFile, callback);
+writeFile(runtimeConfigPath, runtimeConfig, callback);

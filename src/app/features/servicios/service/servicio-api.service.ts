@@ -2,13 +2,14 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Servicio } from '../model/servicio.model';
-import { environment } from '../../../../environments/environment';
+import { ConfigService } from '../../../core/config.service';
 
 
 @Injectable({ providedIn: 'root' })
 export class ServicioApiService {
   private http = inject(HttpClient);
-  private api = `${environment.apiUrl}/api/servicios`;
+  private config = inject(ConfigService);
+  private get api() { return `${this.config.apiUrl}/api/servicios`; }
 
   private headers(): HttpHeaders {
     return new HttpHeaders({

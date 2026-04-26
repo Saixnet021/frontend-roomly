@@ -2,12 +2,13 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { DashboardStats } from '../model/dashboard.model';
-import { environment } from '../../../../environments/environment';
+import { ConfigService } from '../../../core/config.service';
 
 @Injectable({ providedIn: 'root' })
 export class DashboardApiService {
   private http = inject(HttpClient);
-  private apiHost = environment.apiUrl;
+  private config = inject(ConfigService);
+  private get apiHost() { return this.config.apiUrl; }
 
   private getHeaders(): HttpHeaders {
     return new HttpHeaders({

@@ -2,13 +2,14 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Room } from '../model/room.model';
-import { environment } from '../../../../environments/environment';
+import { ConfigService } from '../../../core/config.service';
 
 @Injectable({ providedIn: 'root' })
 export class RoomApiService {
-  private apiHost = environment.apiUrl;
-
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
+  private config = inject(ConfigService);
+  private get apiHost() { return this.config.apiUrl; }
+  constructor() {}
 
   private getHeaders(): HttpHeaders {
     const token = localStorage.getItem('token');

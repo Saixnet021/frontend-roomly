@@ -1,5 +1,6 @@
-import { environment } from '../../../../environments/environment';
 import { Injectable } from '@angular/core';
+import { ConfigService } from '../../../core/config.service';
+import { inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Property } from '../model/property.model';
@@ -9,9 +10,11 @@ import { Property } from '../model/property.model';
 })
 export class PropertyApiService {
 
-  private apiHost = environment.apiUrl;
+  private http = inject(HttpClient);
+  private config = inject(ConfigService);
+  private get apiHost() { return this.config.apiUrl; }
 
-  constructor(private http: HttpClient) { }
+  constructor() { }
 
   private getHeaders(): HttpHeaders {
     const token = localStorage.getItem('token');

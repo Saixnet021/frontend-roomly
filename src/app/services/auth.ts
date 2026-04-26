@@ -1,5 +1,5 @@
-import { environment } from '../../environments/environment';
 import { Injectable } from '@angular/core';
+import { ConfigService } from '../core/config.service';
 import { HttpClient } from '@angular/common/http';
 
 
@@ -10,9 +10,9 @@ import { HttpClient } from '@angular/common/http';
 export class AuthService {
 
   // host base sin path
-  private apiHost = environment.apiUrl;
+  constructor(private http: HttpClient, private config: ConfigService) { }
 
-  constructor(private http: HttpClient) { }
+  private get apiHost() { return this.config.apiUrl; }
 
   // Construye la URL prefijando el tenant almacenado en localStorage (si existe).
   private buildUrl(path: string) {
