@@ -6,6 +6,9 @@
     <!-- Header -->
     <app-topbar [title]="'Bienvenido, ' + (role.toUpperCase() === 'INQUILINO' ? userName : companyName)" subtitle="Panel de control"></app-topbar>
 
+    <!-- Centered content container to avoid overly wide layouts on large screens -->
+    <div class="w-full max-w-[1200px] mx-auto">
+
     @if (role.toUpperCase() === 'PROPIETARIO') {
       @if (dashVM.loading()) {
         <div class="flex justify-center py-20">
@@ -132,6 +135,8 @@
           }
         </div>
     } <!-- end inquilino role -->
+
+      </div> <!-- /.container -->
 
   </main>
 </div>

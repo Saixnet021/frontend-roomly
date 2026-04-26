@@ -32,6 +32,12 @@ export class PropertyViewModel {
     
     this.apiService.getProperties().subscribe({
       next: (data) => {
+        // Debug: log loaded properties to inspect totalIncome values
+        try {
+          console.log('[DEBUG] Properties loaded:', data);
+        } catch (e) {
+          // ignore
+        }
         this.propertiesState.set(data);
         this.loadingState.set(false);
       },
