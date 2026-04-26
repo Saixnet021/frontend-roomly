@@ -1,0 +1,203 @@
+<div class="min-h-screen bg-white flex font-poppins text-gray-900">
+  
+  <app-sidebar></app-sidebar>
+
+  <main class="ml-0 lg:ml-[260px] flex-1 flex flex-col p-5 md:p-10 max-w-[1200px]">
+    <!-- Header -->
+    <app-topbar title="Propiedades"></app-topbar>
+
+    <!-- Content Header -->
+    <div class="flex justify-between items-center mb-8">
+      <p class="text-[15px] font-medium text-gray-700">Gestiona todos los inquilinos en tus propiedades</p>
+      <button (click)="openModal()" class="bg-[#d400ff] hover:bg-[#b000d6] text-white font-semibold py-2.5 px-5 rounded-lg transition-colors flex items-center gap-2 text-[14px]">
+        <i class="fa-solid fa-plus text-[12px]"></i> Nueva propiedad
+      </button>
+    </div>
+
+    <!-- Properties List -->
+    <div class="flex flex-col gap-8">
+
+      @if (propertyVM.isLoading()) {
+        <div class="flex justify-center items-center py-10">
+          <p class="text-gray-500 font-medium">Cargando propiedades...</p>
+        </div>
+      }
+      
+      @if (propertyVM.error()) {
+        <div class="bg-red-50 text-red-600 p-4 rounded-lg font-medium">
+          {{ propertyVM.error() }}
+        </div>
+      }
+
+      @for (prop of propertyVM.properties(); track prop.id) {
+        <!-- Property Card -->
+        <div class="border border-gray-300 rounded-2xl p-7 shadow-sm">
+          <h2 class="text-2xl font-semibold mb-1">{{ prop.name }}</h2>
+          <p class="text-gray-500 font-medium text-[14px] flex items-center gap-1.5 mb-6">
+            <i class="fa-solid fa-location-dot"></i> {{ prop.address }}
+          </p>
+
+          <!-- Stats -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-7">
+            <div class="bg-[#fcf0fa] rounded-xl p-5 border border-fuchsia-100/50">
+              <p class="text-gray-600 text-[13px] font-semibold mb-2">Habitaciones</p>
+              <p class="text-[26px] font-bold leading-none mb-2">{{ prop.roomCount }}</p>
+              <p class="text-gray-500 text-[13px] font-medium">{{ prop.occupiedRooms }} ocupados</p>
+            </div>
+            <div class="bg-[#fcf0fa] rounded-xl p-5 border border-fuchsia-100/50">
+              <p class="text-gray-600 text-[13px] font-semibold mb-2">Ocupación</p>
+              <p class="text-[26px] font-bold leading-none mb-2">{{ (prop.occupiedRooms / prop.roomCount) * 100 | number:'1.0-0' }}%</p>
+              <p class="text-gray-500 text-[13px] font-medium">{{ prop.occupiedRooms }} inquilinos</p>
+            </div>
+            <div class="bg-[#fcf0fa] rounded-xl p-5 border border-fuchsia-100/50">
+              <p class="text-gray-600 text-[13px] font-semibold mb-2">Ingresos</p>
+              <p class="text-[26px] font-bold leading-none mb-2">S/. {{ prop.totalIncome }}</p>
+              <p class="text-gray-500 text-[13px] font-medium">mensual</p>
+            </div>
+          </div>
+
+          <!-- Servicios reales desde BD -->
+          <div class="mb-8">
+            <div class="flex justify-between items-center mb-3">
+              <p class="text-black text-[14px] font-bold">Servicios</p>
+              <button (click)="openServiceModal(prop.id)" class="text-[#d400ff] text-[12px] font-bold hover:underline flex items-center gap-1">
+                <i class="fa-solid fa-plus text-[10px]"></i> Añadir
+              </button>
+            </div>
+            @if (getServicios(prop.id).length > 0) {
+              <div class="flex flex-wrap gap-2">
+                @for (s of getServicios(prop.id); track s.id) {
+                  <span class="text-[11px] font-semibold px-3 py-1 rounded-full flex items-center gap-1.5"
+                    [class.bg-[#efbaff]]="s.tipo === 'INCLUIDO'"
+                    [class.text-[#a600d6]]="s.tipo === 'INCLUIDO'"
+                    [class.bg-orange-100]="s.tipo === 'ADICIONAL'"
+                    [class.text-orange-700]="s.tipo === 'ADICIONAL'">
+                    <i class="fa-solid" [class.fa-bolt]="s.tipo === 'ADICIONAL'" [class.fa-check-circle]="s.tipo === 'INCLUIDO'"></i>
+                    {{ s.name }}
+                    @if (s.tipo === 'ADICIONAL') {
+                      <span class="font-normal opacity-70"> +S/.{{ s.cost }}</span>
+                    }
+                  </span>
+                }
+              </div>
+            } @else {
+              <p class="text-gray-400 text-[12px] italic">Sin servicios registrados</p>
+            }
+          </div>
+
+          <!-- Actions -->
+          <div class="flex gap-4 mt-6">
+            <button (click)="openModal(prop)" class="flex-1 border border-gray-300 text-gray-800 font-semibold py-3 rounded-lg hover:bg-gray-50 transition-colors flex justify-center items-center gap-2 text-[14px]">
+              <i class="fa-solid fa-pen"></i> Editar
+            </button>
+            <button (click)="deleteProperty(prop.id)" class="flex-1 border border-red-200 text-red-600 font-semibold py-3 rounded-lg hover:bg-red-50 transition-colors flex justify-center items-center gap-2 text-[14px]">
+              <i class="fa-solid fa-trash"></i> Eliminar
+            </button>
+            <button class="flex-1 bg-[#d400ff] text-white font-semibold py-3 rounded-lg hover:bg-[#b000d6] transition-colors text-[14px]"
+              [routerLink]="['/' + propertyVM.tenant + '/propiedades', prop.id]">
+              Ver detalles
+            </button>
+          </div>
+        </div>
+      }
+
+      @if (!propertyVM.isLoading() && propertyVM.properties().length === 0 && !propertyVM.error()) {
+        <div class="flex flex-col items-center justify-center py-20 text-center">
+          <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4 text-gray-400 text-2xl">
+            <i class="fa-solid fa-house"></i>
+          </div>
+          <h3 class="text-xl font-bold text-gray-800 mb-2">No tienes propiedades registradas</h3>
+          <p class="text-gray-500 max-w-sm">Empieza agregando tu primera propiedad para utilizar el sistema de gestión avanzado.</p>
+        </div>
+      }
+
+    </div>
+  </main>
+</div>
+
+<!-- Modal Form for Create/Edit -->
+@if (showModal) {
+<div class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden bg-black/50 backdrop-blur-sm transition-opacity">
+  <div class="relative w-full max-w-md p-4">
+    <!-- Modal content -->
+    <div class="relative bg-white rounded-2xl shadow-xl">
+      <!-- Modal header -->
+      <div class="flex items-center justify-between p-5 border-b border-gray-100 rounded-t-xl">
+        <h3 class="text-xl font-bold text-gray-900">
+          {{ editingId ? 'Editar Propiedad' : 'Nueva Propiedad' }}
+        </h3>
+        <button (click)="closeModal()" type="button" class="text-gray-400 bg-transparent hover:bg-gray-100 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center">
+          <i class="fa-solid fa-xmark text-lg"></i>
+          <span class="sr-only">Cerrar modal</span>
+        </button>
+      </div>
+      <!-- Modal body -->
+      <div class="p-6 space-y-4">
+        <div>
+          <label class="block mb-2 text-sm font-semibold text-gray-900">Nombre de la propiedad</label>
+          <input type="text" [(ngModel)]="currentProp.name" name="name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#d400ff] focus:border-[#d400ff] block w-full p-3" placeholder="Ej: Torre Central" required>
+        </div>
+        <div>
+          <label class="block mb-2 text-sm font-semibold text-gray-900">Dirección completa</label>
+          <input type="text" [(ngModel)]="currentProp.address" name="address" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#d400ff] focus:border-[#d400ff] block w-full p-3" placeholder="Av. Principal 123" required>
+        </div>
+        <div>
+          <label class="block mb-2 text-sm font-semibold text-gray-900">Precio departamento completo (S/.)</label>
+          <input type="number" [(ngModel)]="currentProp.price" name="price" min="0"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#d400ff] focus:border-[#d400ff] block w-full p-3"
+            placeholder="Precio si se arrienda el dpto. entero (opcional)">
+        </div>
+      </div>
+      <!-- Modal footer -->
+      <div class="flex items-center p-5 border-t border-gray-100 rounded-b-xl gap-3">
+        <button (click)="saveProperty()" type="button" class="text-white bg-[#d400ff] hover:bg-[#b000d6] focus:ring-4 focus:outline-none focus:ring-purple-300 font-semibold rounded-lg text-sm px-5 py-2.5 text-center transition-colors">
+          {{ editingId ? 'Guardar Cambios' : 'Crear Propiedad' }}
+        </button>
+        <button (click)="closeModal()" type="button" class="py-2.5 px-5 text-sm font-semibold text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-50 focus:z-10 focus:ring-4 focus:ring-gray-100 transition-colors">
+          Cancelar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+}
+
+<!-- Modal de Servicio -->
+@if (showServiceModal) {
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+  <div class="relative w-full max-w-md p-4">
+    <div class="bg-white rounded-2xl shadow-xl">
+      <div class="flex items-center justify-between p-5 border-b border-gray-100">
+        <h3 class="text-xl font-bold text-gray-900">Añadir Servicio</h3>
+        <button (click)="closeServiceModal()" class="text-gray-400 hover:bg-gray-100 rounded-lg w-8 h-8 flex justify-center items-center">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+      <div class="p-6 space-y-4">
+        <div>
+          <label class="block mb-2 text-[13px] font-semibold text-gray-900">Nombre del servicio</label>
+          <input type="text" [(ngModel)]="currentService.name" class="bg-gray-50 border border-gray-300 text-sm rounded-lg focus:ring-[#d400ff] focus:border-[#d400ff] block w-full p-2.5" placeholder="Agua, Luz, WiFi...">
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block mb-2 text-[13px] font-semibold text-gray-900">Tipo</label>
+            <select [(ngModel)]="currentService.tipo" class="bg-gray-50 border border-gray-300 text-sm rounded-lg block w-full p-2.5">
+              <option value="INCLUIDO">INCLUIDO</option>
+              <option value="ADICIONAL">ADICIONAL</option>
+            </select>
+          </div>
+          <div>
+            <label class="block mb-2 text-[13px] font-semibold text-gray-900">Costo (S/.)</label>
+            <input type="number" [(ngModel)]="currentService.cost" [disabled]="currentService.tipo === 'INCLUIDO'" class="bg-gray-50 border border-gray-300 text-sm rounded-lg block w-full p-2.5 disabled:opacity-50">
+          </div>
+        </div>
+      </div>
+      <div class="flex items-center p-5 border-t border-gray-100 gap-3">
+        <button (click)="saveService()" class="text-white bg-[#d400ff] hover:bg-[#b000d6] font-semibold rounded-lg text-sm px-5 py-2.5 transition-colors">Guardar Servicio</button>
+        <button (click)="closeServiceModal()" class="py-2.5 px-5 text-sm font-semibold text-gray-900 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
+}
+

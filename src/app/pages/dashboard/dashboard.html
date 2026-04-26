@@ -1,0 +1,137 @@
+<div class="min-h-screen bg-[#f9f9f9] flex font-poppins text-gray-900">
+  <app-sidebar></app-sidebar>
+
+  <main class="ml-0 lg:ml-[260px] flex-1 flex flex-col p-5 md:p-10">
+
+    <!-- Header -->
+    <app-topbar [title]="'Bienvenido, ' + (role.toUpperCase() === 'INQUILINO' ? userName : companyName)" subtitle="Panel de control"></app-topbar>
+
+    @if (role.toUpperCase() === 'PROPIETARIO') {
+      @if (dashVM.loading()) {
+        <div class="flex justify-center py-20">
+          <div class="text-center">
+            <div class="w-10 h-10 border-4 border-[#d400ff] border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+            <p class="text-gray-500 text-[14px]">Cargando datos...</p>
+          </div>
+        </div>
+      } @else {
+        @if (dashVM.stats(); as stats) {
+        <!-- KPI Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
+          <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between mb-4">
+              <p class="text-[13px] font-semibold text-gray-500">Total de propiedades</p>
+              <i class="fa-solid fa-building text-[#d400ff] text-lg"></i>
+            </div>
+            <p class="text-4xl font-black text-gray-900">{{ stats.totalProperties }}</p>
+          </div>
+
+          <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between mb-4">
+              <p class="text-[13px] font-semibold text-gray-500">Cuartos disponibles</p>
+              <i class="fa-solid fa-door-open text-[#d400ff] text-lg"></i>
+            </div>
+            <p class="text-4xl font-black text-gray-900">{{ stats.availableRooms }}</p>
+          </div>
+
+          <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between mb-4">
+              <p class="text-[13px] font-semibold text-gray-500">Inquilinos activos</p>
+              <i class="fa-solid fa-users text-[#d400ff] text-lg"></i>
+            </div>
+            <p class="text-4xl font-black text-gray-900">{{ stats.totalInquilinos }}</p>
+          </div>
+
+          <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between mb-4">
+              <p class="text-[13px] font-semibold text-gray-500">Ingresos mensuales</p>
+              <i class="fa-solid fa-dollar-sign text-[#d400ff] text-lg"></i>
+            </div>
+            <p class="text-4xl font-black text-gray-900">S/. {{ stats.monthlyIncome | number:'1.0-0' }}</p>
+          </div>
+        </div>
+
+        <!-- Listado reciente de propiedades -->
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm">
+          <div class="flex justify-between items-center p-6 border-b border-gray-100">
+            <h2 class="text-lg font-bold text-gray-900">Resumen de Propiedades</h2>
+            <a [routerLink]="'/' + tenant + '/propiedades'" class="text-[#d400ff] text-[13px] font-semibold hover:underline">Ver todas →</a>
+          </div>
+          <div class="divide-y divide-gray-50">
+            @for (prop of propertyVM.properties(); track prop.id) {
+              <div class="flex flex-col md:flex-row md:items-center justify-between p-5 hover:bg-gray-50 transition-colors gap-4">
+                <div class="flex items-center gap-4">
+                  <div class="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center shrink-0">
+                    <i class="fa-solid fa-building text-[#d400ff] text-[14px]"></i>
+                  </div>
+                  <div>
+                    <p class="font-bold text-gray-900 text-[15px]">{{ prop.name }}</p>
+                    <p class="text-gray-500 text-[13px] line-clamp-1">{{ prop.address }}</p>
+                  </div>
+                </div>
+                <div class="flex items-center justify-between md:justify-end gap-4 md:gap-8 border-t border-gray-100 md:border-0 pt-4 md:pt-0">
+                  <div class="text-left md:text-right">
+                    <p class="font-bold text-gray-900">{{ prop.occupiedRooms }} / {{ prop.roomCount }}</p>
+                    <p class="text-[12px] text-gray-500">Ocupación</p>
+                  </div>
+                  <div class="text-left md:text-right">
+                    <p class="font-bold text-[#d400ff]">S/. {{ prop.totalIncome | number:'1.0-0' }}</p>
+                    <p class="text-[12px] text-gray-500">Mensual</p>
+                  </div>
+                  <a [routerLink]="['/' + tenant + '/propiedades', prop.id]"
+                    class="bg-[#d400ff] text-white text-[12px] font-semibold px-4 py-2 rounded-lg hover:bg-[#b000d6] transition-colors ml-auto md:ml-0">
+                    Ver
+                  </a>
+                </div>
+              </div>
+            }
+            @empty {
+              <div class="p-10 text-center text-gray-400 text-[14px]">
+                <i class="fa-solid fa-house-chimney text-3xl mb-3 block"></i>
+                Aún no tienes propiedades registradas.
+              </div>
+            }
+          </div>
+        </div>
+      }
+    }
+  } @else {
+      <!-- Inquilino view -->
+      <div class="bg-white rounded-3xl p-6 md:p-12 border border-gray-100 shadow-sm text-center">
+          <div class="w-16 h-16 md:w-24 md:h-24 bg-purple-50 text-[#d400ff] rounded-2xl md:rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-sm border border-purple-100">
+              <i class="fa-solid fa-house-user text-2xl md:text-4xl"></i>
+          </div>
+          
+          <h2 class="text-2xl md:text-3xl font-black text-gray-900 mb-2">¡Hola, {{ userName }}!</h2>
+          <p class="text-gray-500 max-w-md mx-auto mb-10 text-[14px] md:text-[15px]">Bienvenido a tu panel de inquilino en <strong>{{ companyName }}</strong>.</p>
+          
+          @if (myInfo(); as info) {
+              @if (info.propertyName) {
+                <div class="max-w-2xl mx-auto bg-gray-50 rounded-2xl md:rounded-3xl p-6 md:p-8 border border-gray-100 mb-10 text-left">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
+                        <div class="w-14 h-14 sm:w-16 sm:h-16 bg-white rounded-2xl flex items-center justify-center shadow-sm shrink-0">
+                            <i class="fa-solid fa-building text-[#d400ff] text-xl sm:text-2xl"></i>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-[11px] sm:text-[12px] font-bold text-gray-400 uppercase tracking-widest mb-1">Mi Propiedad Alquilada</p>
+                            <h3 class="text-lg sm:text-xl font-black text-gray-900">{{ info.propertyName }}</h3>
+                            @if (info.roomId) {
+                                <p class="text-gray-600 font-medium mt-2 text-[14px]">Cuarto: <span class="bg-purple-100 text-[#d400ff] px-2 py-0.5 rounded-lg text-[13px] font-bold">{{ info.roomNumber }}</span></p>
+                            }
+                        </div>
+                        <div class="mt-4 sm:mt-0 sm:ml-auto self-start sm:self-center">
+                             <span class="bg-green-100 text-green-700 text-[10px] sm:text-[11px] font-black px-3 py-1.5 rounded-full inline-block">CONTRATO ACTIVO</span>
+                        </div>
+                    </div>
+                </div>
+              } @else {
+                  <div class="bg-orange-50 border border-orange-100 text-orange-700 p-4 rounded-2xl mb-8 max-w-md mx-auto text-[14px]">
+                      <i class="fa-solid fa-circle-info mr-2"></i> Parece que aún no tienes una propiedad asignada. Contacta con tu administrador.
+                  </div>
+              }
+          }
+        </div>
+    } <!-- end inquilino role -->
+
+  </main>
+</div>

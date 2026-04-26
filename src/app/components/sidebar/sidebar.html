@@ -1,0 +1,80 @@
+<aside class="w-[260px] h-screen bg-white flex flex-col fixed left-0 top-0 border-r border-gray-100 font-poppins z-40">
+
+  <!-- Logo + empresa -->
+  <div class="flex items-center gap-3 px-6 py-6 border-b border-gray-100">
+    <div
+      class="w-10 h-10 rounded-xl bg-gradient-to-b from-[#1c092b] to-[#12051e] flex items-center justify-center shrink-0">
+      <span class="text-[rgb(193,130,221)] text-[20px] font-serif font-bold italic leading-none">R</span>
+    </div>
+    <div class="overflow-hidden">
+      <p class="text-[13px] font-black text-gray-900 truncate">{{ companyName }}</p>
+      <p class="text-[11px] text-gray-400 font-medium">Roomly SaaS</p>
+    </div>
+  </div>
+
+  <!-- Nav -->
+  <nav class="flex-1 flex flex-col gap-1 px-3 py-4">
+
+    @if (role === 'PROPIETARIO') {
+      <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider px-3 mb-2">Administración</p>
+
+      <!-- Panel de control -->
+      <a [routerLink]="'/' + tenant + '/dashboard'"
+        class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all cursor-pointer"
+        [class.bg-[#d400ff]]="isActive('dashboard')" [class.text-white]="isActive('dashboard')"
+        [class.font-bold]="isActive('dashboard')" [class.text-gray-600]="!isActive('dashboard')"
+        [class.hover:bg-gray-100]="!isActive('dashboard')">
+        <i class="fa-solid fa-border-all w-4 text-center"></i>
+        <span class="text-[14px] font-semibold">Panel de control</span>
+      </a>
+
+      <!-- Propiedades -->
+      <a [routerLink]="'/' + tenant + '/propiedades'"
+        class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all cursor-pointer"
+        [class.bg-[#d400ff]]="isActive('propiedades')" [class.text-white]="isActive('propiedades')"
+        [class.font-bold]="isActive('propiedades')" [class.text-gray-600]="!isActive('propiedades')"
+        [class.hover:bg-gray-100]="!isActive('propiedades')">
+        <i class="fa-solid fa-house-chimney w-4 text-center"></i>
+        <span class="text-[14px] font-semibold">Propiedades</span>
+      </a>
+
+      <!-- Inquilinos -->
+      <a [routerLink]="'/' + tenant + '/inquilinos'"
+        class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all cursor-pointer"
+        [class.bg-[#d400ff]]="isActive('inquilinos')" [class.text-white]="isActive('inquilinos')"
+        [class.font-bold]="isActive('inquilinos')" [class.text-gray-600]="!isActive('inquilinos')"
+        [class.hover:bg-gray-100]="!isActive('inquilinos')">
+        <i class="fa-solid fa-users w-4 text-center"></i>
+        <span class="text-[14px] font-semibold">Inquilinos</span>
+      </a>
+    } @else {
+      <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider px-3 mb-2">Mi Espacio</p>
+
+      <!-- Mi propiedad (Pronto) -->
+      <div class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-300 cursor-not-allowed">
+        <i class="fa-solid fa-house-user w-4 text-center"></i>
+        <span class="text-[14px] font-semibold">Mi propiedad</span>
+        <span class="ml-auto text-[10px] bg-gray-100 text-gray-400 px-2 py-0.5 rounded-full font-bold">Pronto</span>
+      </div>
+    }
+
+    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider px-3 mb-2 mt-4">Servicios</p>
+
+    <!-- Pagos (disabled) -->
+    <div class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-300 cursor-not-allowed">
+      <i class="fa-solid fa-dollar-sign w-4 text-center"></i>
+      <span class="text-[14px] font-semibold">Pagos</span>
+      <span class="ml-auto text-[10px] bg-gray-100 text-gray-400 px-2 py-0.5 rounded-full font-bold">Pronto</span>
+    </div>
+
+    <!-- Contratos (disabled) -->
+    <div class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-300 cursor-not-allowed">
+      <i class="fa-regular fa-file-lines w-4 text-center"></i>
+      <span class="text-[14px] font-semibold">Contratos</span>
+      <span class="ml-auto text-[10px] bg-gray-100 text-gray-400 px-2 py-0.5 rounded-full font-bold">Pronto</span>
+    </div>
+
+  </nav>
+
+
+</aside>

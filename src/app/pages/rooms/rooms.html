@@ -1,0 +1,195 @@
+<div class="min-h-screen bg-white flex font-poppins text-gray-900">
+  <app-sidebar></app-sidebar>
+
+  <main class="ml-0 lg:ml-[260px] flex-1 flex flex-col p-5 md:p-10 max-w-[1200px]">
+    
+    <!-- Header -->
+    <app-topbar title="Cuartos de la Propiedad" subtitle="Propiedades"></app-topbar>
+
+    <!-- Content Header -->
+    <div class="flex justify-between items-center mb-8">
+      <p class="text-[15px] font-medium text-gray-700">Administra los cuartos y su disponibilidad</p>
+      <button (click)="openModal()" class="bg-[#d400ff] hover:bg-[#b000d6] text-white font-semibold py-2.5 px-5 rounded-lg transition-colors flex items-center gap-2 text-[14px]">
+        <i class="fa-solid fa-plus text-[12px]"></i> Nuevo Cuarto
+      </button>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="grid grid-cols-3 gap-5 mb-10">
+      <div class="bg-green-50 border border-green-100 rounded-xl p-5">
+        <p class="text-green-700 text-[13px] font-semibold mb-1">Disponibles</p>
+        <p class="text-3xl font-bold text-green-800">{{ countByStatus('Disponible') }}</p>
+      </div>
+      <div class="bg-red-50 border border-red-100 rounded-xl p-5">
+        <p class="text-red-700 text-[13px] font-semibold mb-1">Ocupados</p>
+        <p class="text-3xl font-bold text-red-800">{{ countByStatus('Ocupado') }}</p>
+      </div>
+      <div class="bg-yellow-50 border border-yellow-100 rounded-xl p-5">
+        <p class="text-yellow-700 text-[13px] font-semibold mb-1">Mantenimiento</p>
+        <p class="text-3xl font-bold text-yellow-800">{{ countByStatus('Mantenimiento') }}</p>
+      </div>
+    </div>
+
+    <!-- Loading / Error -->
+    @if (roomVM.isLoading()) {
+      <div class="flex justify-center py-10">
+        <p class="text-gray-500">Cargando cuartos...</p>
+      </div>
+    }
+    @if (roomVM.error()) {
+      <div class="bg-red-50 text-red-600 p-4 rounded-lg mb-5">{{ roomVM.error() }}</div>
+    }
+
+    <!-- Rooms Grid -->
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      @for (room of roomVM.rooms(); track room.id) {
+        <div class="border border-gray-200 rounded-xl p-5 hover:shadow-md transition-all relative">
+          <div class="flex justify-between items-start mb-4">
+            <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+              <i class="fa-solid fa-door-open text-purple-600"></i>
+            </div>
+            <span class="text-[11px] font-bold px-2 py-1 rounded-md {{ statusColor(room.status) }}" [ngClass]="statusColor(room.status)">
+              {{ room.status }}
+            </span>
+          </div>
+          <h3 class="text-xl font-bold text-gray-900 mb-1">{{ room.roomNumber }}</h3>
+          <p class="text-[#d400ff] font-bold text-[15px] mb-4">S/. {{ room.price | number:'1.2-2' }}</p>
+          
+          <!-- Servicios del cuarto -->
+          <div class="mb-4">
+            <div class="flex justify-between items-center mb-2">
+              <p class="text-[11px] font-bold text-gray-400 uppercase">Servicios</p>
+              <button (click)="openServiceModal(room.id)" class="text-[#d400ff] text-[10px] font-bold hover:underline">
+                + Añadir
+              </button>
+            </div>
+            @if (getServicios(room.id).length > 0) {
+              <div class="flex flex-wrap gap-1.5">
+                @for (s of getServicios(room.id); track s.id) {
+                  <span class="text-[10px] font-semibold px-2 py-0.5 rounded-md flex items-center gap-1"
+                    [class.bg-purple-50]="s.tipo === 'INCLUIDO'"
+                    [class.text-purple-600]="s.tipo === 'INCLUIDO'"
+                    [class.bg-orange-50]="s.tipo === 'ADICIONAL'"
+                    [class.text-orange-600]="s.tipo === 'ADICIONAL'">
+                    {{ s.name }}
+                  </span>
+                }
+              </div>
+            } @else {
+              <p class="text-gray-300 text-[10px] italic">Sin servicios</p>
+            }
+          </div>
+
+          <div class="flex gap-2">
+            <button (click)="openModal(room)" class="flex-1 text-[12px] font-semibold py-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
+              Editar
+            </button>
+            <button (click)="deleteRoom(room.id)" class="flex-1 text-[12px] font-semibold py-2 rounded-lg border border-red-200 text-red-600 hover:bg-red-50 transition-colors">
+              Borrar
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+
+    @if (!roomVM.isLoading() && roomVM.rooms().length === 0 && !roomVM.error()) {
+      <div class="flex flex-col items-center justify-center py-20 text-center">
+        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4 text-gray-400 text-2xl">
+          <i class="fa-solid fa-door-open"></i>
+        </div>
+        <h3 class="text-xl font-bold text-gray-800 mb-2">Sin cuartos registrados</h3>
+        <p class="text-gray-500 text-[14px]">Agrega los cuartos o unidades que conforman esta propiedad.</p>
+      </div>
+    }
+
+  </main>
+</div>
+
+<!-- Modal -->
+@if (showModal) {
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+  <div class="relative w-full max-w-md p-4">
+    <div class="bg-white rounded-2xl shadow-xl">
+      <div class="flex items-center justify-between p-5 border-b border-gray-100">
+        <h3 class="text-xl font-bold text-gray-900">{{ editingId ? 'Editar Cuarto' : 'Nuevo Cuarto' }}</h3>
+        <button (click)="closeModal()" class="text-gray-400 hover:bg-gray-100 hover:text-gray-900 rounded-lg w-8 h-8 inline-flex justify-center items-center">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+      
+      <div class="p-6 space-y-4">
+        <div>
+          <label class="block mb-2 text-[13px] font-semibold text-gray-900">Número / Identificador del cuarto</label>
+          <input type="text" [(ngModel)]="currentRoom.roomNumber"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#d400ff] focus:border-[#d400ff] block w-full p-3"
+            placeholder="Ej: A-101, Piso 2-B">
+        </div>
+        <div>
+          <label class="block mb-2 text-[13px] font-semibold text-gray-900">Precio mensual (S/.)</label>
+          <input type="number" [(ngModel)]="currentRoom.price" min="0"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#d400ff] focus:border-[#d400ff] block w-full p-3"
+            placeholder="Ej: 800">
+        </div>
+        <div>
+          <label class="block mb-2 text-[13px] font-semibold text-gray-900">Estado</label>
+          <select [(ngModel)]="currentRoom.status"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#d400ff] focus:border-[#d400ff] block w-full p-3">
+            <option value="Disponible">Disponible</option>
+            <option value="Ocupado">Ocupado</option>
+            <option value="Mantenimiento">Mantenimiento</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="flex items-center p-5 border-t border-gray-100 gap-3">
+        <button (click)="saveRoom()" class="text-white bg-[#d400ff] hover:bg-[#b000d6] font-semibold rounded-lg text-sm px-5 py-2.5 transition-colors">
+          {{ editingId ? 'Guardar Cambios' : 'Crear Cuarto' }}
+        </button>
+        <button (click)="closeModal()" class="py-2.5 px-5 text-sm font-semibold text-gray-900 bg-white rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
+          Cancelar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+}
+
+<!-- Modal de Servicio -->
+@if (showServiceModal) {
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+  <div class="relative w-full max-w-md p-4">
+    <div class="bg-white rounded-2xl shadow-xl">
+      <div class="flex items-center justify-between p-5 border-b border-gray-100">
+        <h3 class="text-xl font-bold text-gray-900">Añadir Servicio al Cuarto</h3>
+        <button (click)="closeServiceModal()" class="text-gray-400 hover:bg-gray-100 rounded-lg w-8 h-8 flex justify-center items-center">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+      <div class="p-6 space-y-4">
+        <div>
+          <label class="block mb-2 text-[13px] font-semibold text-gray-900">Nombre del servicio</label>
+          <input type="text" [(ngModel)]="currentService.name" class="bg-gray-50 border border-gray-300 text-sm rounded-lg focus:ring-[#d400ff] focus:border-[#d400ff] block w-full p-2.5" placeholder="Agua, Luz, WiFi...">
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block mb-2 text-[13px] font-semibold text-gray-900">Tipo</label>
+            <select [(ngModel)]="currentService.tipo" class="bg-gray-50 border border-gray-300 text-sm rounded-lg block w-full p-2.5">
+              <option value="INCLUIDO">INCLUIDO</option>
+              <option value="ADICIONAL">ADICIONAL</option>
+            </select>
+          </div>
+          <div>
+            <label class="block mb-2 text-[13px] font-semibold text-gray-900">Costo (S/.)</label>
+            <input type="number" [(ngModel)]="currentService.cost" [disabled]="currentService.tipo === 'INCLUIDO'" class="bg-gray-50 border border-gray-300 text-sm rounded-lg block w-full p-2.5 disabled:opacity-50">
+          </div>
+        </div>
+      </div>
+      <div class="flex items-center p-5 border-t border-gray-100 gap-3">
+        <button (click)="saveService()" class="text-white bg-[#d400ff] hover:bg-[#b000d6] font-semibold rounded-lg text-sm px-5 py-2.5 transition-colors">Guardar Servicio</button>
+        <button (click)="closeServiceModal()" class="py-2.5 px-5 text-sm font-semibold text-gray-900 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
+}
+

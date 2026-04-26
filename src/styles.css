@@ -2,3 +2,35 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Prevent global horizontal scrolling by default (allow only explicit containers) */
+html, body, app-root {
+	overflow-x: hidden;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	box-sizing: border-box;
+}
+
+/* Make all elements use border-box sizing to avoid unexpected widths */
+*, *::before, *::after {
+	box-sizing: inherit;
+}
+
+/* Table responsive wrapper: only these containers will scroll horizontally */
+.table-responsive {
+	width: 100%;
+	overflow-x: auto;
+	-webkit-overflow-scrolling: touch;
+}
+
+/* Ensure tables don't force the page to scroll — they can be wider than the viewport and will be scrolled inside the wrapper */
+.table-responsive table {
+	width: 100%;
+	min-width: 640px; /* adjust as needed for your table columns */
+	border-collapse: collapse;
+}
+
+/* Small utility to restore natural scrolling for very specific components if needed */
+.allow-horizontal-scroll {
+	overflow-x: auto !important;
+}

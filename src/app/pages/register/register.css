@@ -1,3 +1,83 @@
-@tailwindcss base;
-@tailwindcss components;
-@tailwindcss utilities;
+/* Tailwind CSS handles all styling for register page */
+
+.input-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: #757575;
+  font-size: 14px;
+}
+.input-group input {
+  width: 100%;
+  border: 1px solid rgba(117,117,117,0.18);
+  border-radius: 14px;
+  padding: 14px 16px;
+  background: #F9F9FC;
+  color: #111;
+}
+.form-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #757575;
+  font-size: 14px;
+}
+.link-secondary {
+  color: #7a00ff;
+  text-decoration: none;
+  font-weight: 600;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  border: none;
+  border-radius: 14px;
+  padding: 14px 0;
+  cursor: pointer;
+}
+.btn-primary {
+  background: #2b2b2b;
+  color: #ffffff;
+  font-weight: 700;
+}
+.auth-footer {
+  margin-top: 20px;
+  text-align: center;
+  font-size: 14px;
+  color: #757575;
+}
+.auth-footer a {
+  color: #7a00ff;
+  text-decoration: none;
+  font-weight: 700;
+}
+@media (max-width: 980px) {
+  .auth-shell {
+    flex-direction: column;
+  }
+  .auth-left,
+  .auth-right {
+    width: 100%;
+  }
+  .auth-left {
+    min-height: auto;
+    padding: 32px;
+  }
+  .auth-right {
+    padding: 32px;
+  }
+  .auth-nav {
+    position: relative;
+    top: auto;
+    right: auto;
+    justify-content: flex-start;
+    margin-bottom: 24px;
+  }
+}

@@ -1,0 +1,24 @@
+<header class="w-full flex justify-between items-center mb-10 pb-6 border-b border-gray-200">
+  <div class="flex items-center gap-4">
+    <!-- Hamburguesa móvil -->
+    <button (click)="ui.toggleSidebar()" class="lg:hidden text-gray-600 text-xl p-2 hover:bg-gray-100 rounded-lg transition-colors relative z-[60]">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+    <div>
+      @if (subtitle) {
+        <p class="text-[13px] font-semibold text-[#d400ff] mb-1">{{ subtitle }}</p>
+      }
+      <h1 class="text-2xl md:text-3xl font-bold tracking-tight">{{ title }}</h1>
+    </div>
+  </div>
+
+  <div class="flex items-center gap-6">
+    <button class="text-gray-400 hover:text-[#d400ff] transition-colors text-xl relative">
+      <i class="fa-regular fa-bell"></i>
+      <span class="absolute top-0 right-0 w-2.5 h-2.5 bg-[#d400ff] border-2 border-white rounded-full"></span>
+    </button>
+    <button (click)="logout()" title="Cerrar Sesión" class="text-gray-400 hover:text-red-500 transition-all text-xl hover:scale-110 active:scale-95">
+      <i class="fa-solid fa-right-from-bracket"></i>
+    </button>
+  </div>
+</header>
